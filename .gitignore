@@ -54,3 +54,5 @@ dkms.conf
 # Keil auto generated config files
 CG2271.uvoptx
 CG2271.uvguix.*
+Objects/
+Listings/
