@@ -17,10 +17,15 @@ if (process.env.HOTSPOT_URL) {
 }
 
 app.get("/onRed", (req, res) => {
-  const ESPResponse = axios.get(HOTSPOT_URL + "/onRed");
-  res.send(ESPResponse);
+  const ESPResponse = axios.get("http://" + HOTSPOT_URL + "/onRed");
+  res.send("Red LED on");
 });
 
-app.listen(3000, () => {
-  console.log("Backend server is running on port 3000");
+app.get("/offRed", (req, res) => {
+  const ESPResponse = axios.get("http://" + HOTSPOT_URL + "/offRed");
+  res.send("Red LED off");
+});
+
+app.listen(8000, () => {
+  console.log("Backend server is running on port 8000");
 });
