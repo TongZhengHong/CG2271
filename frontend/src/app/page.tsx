@@ -4,11 +4,11 @@ import { Button } from "@/components/Button";
 import axios from "axios";
 
 const onLED = async () => {
-  axios.get("http://localhost:8000/onRed");
+  axios.post("/api/onRed");
 };
 
 const offLED = async () => {
-  axios.get("http://localhost:8000/offRed");
+  axios.post("/api/offRed");
 };
 
 export default function Home() {
