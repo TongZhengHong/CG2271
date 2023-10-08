@@ -38,34 +38,33 @@ void init_pwm() {
   SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
   SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
 	
-	// TIMER1: Set prescalar of timer = 128
+	// TIMER1: Set prescaler of timer = 128
   TPM1->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
-  TPM1->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
+  TPM1->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(TIMER_PRESCALER));
   TPM1->SC &= ~(TPM_SC_CPWMS_MASK); // Up-counting only mode
 
   TPM1_C0SC &= ~(TPM_CnSC_ELSB_MASK | TPM_CnSC_ELSA_MASK | TPM_CnSC_MSB_MASK | TPM_CnSC_MSA_MASK);
   TPM1_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1)); // High-true pulses, Edge-aligned PWM
 	
-	// TIMER2: Set prescalar of timer = 128
+	// TIMER2: Set prescaler of timer = 128
   TPM2->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
-  TPM2->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
+  TPM2->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(TIMER_PRESCALER));
   TPM2->SC &= ~(TPM_SC_CPWMS_MASK); // Up-counting only mode
 
   TPM2_C0SC &= ~(TPM_CnSC_ELSB_MASK | TPM_CnSC_ELSA_MASK | TPM_CnSC_MSB_MASK | TPM_CnSC_MSA_MASK);
   TPM2_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1)); // High-true pulses, Edge-aligned PWM
 	
-	// TIMER0: Set prescalar of timer = 128
+	// TIMER0: Set prescaler of timer = 128
   TPM0->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
-  TPM0->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
+  TPM0->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(TIMER_PRESCALER));
   TPM0->SC &= ~(TPM_SC_CPWMS_MASK); // Up-counting only mode
 
   TPM0_C0SC &= ~(TPM_CnSC_ELSB_MASK | TPM_CnSC_ELSA_MASK | TPM_CnSC_MSB_MASK | TPM_CnSC_MSA_MASK);
   TPM0_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1)); // High-true pulses, Edge-aligned PWM
 	
-	// Set PWM frequency for motor pins (timer1 and timer2)
-	// 48MHz clock / 128 prescaler = 375,000Hz. For 25 kHz, reset counter at 15
-  TPM1->MOD = 14;
-	TPM2->MOD = 14;
+	// Set PWM period for motor pins (timer1 and timer2)
+  TPM1->MOD = MOTOR_PERIOD_TICKS - 1;
+	TPM2->MOD = MOTOR_PERIOD_TICKS - 1;
 }
 
 void init_serial(uint32_t baud_rate) {

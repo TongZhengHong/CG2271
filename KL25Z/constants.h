@@ -2,6 +2,11 @@ enum state {
   MOVING, STOP, END
 };
 
+#define TIMER_PRESCALER 4 // prescalar = 16
+#define MOTOR_PWM_FREQ 25000 // 25 kHz to reduce noise
+// 48 MHz clock / 16 prescaler = 3 MHz. For 25 kHz, reset counter at 120
+int MOTOR_PERIOD_TICKS = 48000000 / TIMER_PRESCALER / MOTOR_PWM_FREQ;
+
 // Motor pins
 #define MOTOR_FRONT_LEFT 	0 // PTB0: TPM1_CH0
 #define MOTOR_FRONT_RIGHT 1 // PTB1: TPM1_CH1
