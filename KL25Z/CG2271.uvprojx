@@ -16,8 +16,8 @@
         <TargetCommonOption>
           <Device>MKL25Z128xxx4</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.Kinetis_KLxx_DFP.1.15.1</PackID>
-          <PackURL>https://www.keil.com/pack/</PackURL>
+          <PackID>Keil.Kinetis_KLxx_DFP.1.15.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x1FFFF000,0x00004000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
