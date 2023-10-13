@@ -42,7 +42,7 @@ export default async function offRed(
   const fourBitMotorX = Math.round(motorX * 8);
   const fourBitMotorY = Math.round(motorY * 8);
   axios.get(
-    `http://${process.env.NEXT_PUBLIC_HOTSPOT_URL}/motor${fourBitMapper.get(
+    `http://${process.env.NEXT_PUBLIC_HOTSPOT_URL}/motor=${fourBitMapper.get(
       fourBitMotorX
     )}${fourBitMapper.get(fourBitMotorY)}}`
   );
