@@ -6,6 +6,16 @@
 volatile uint8_t serialData;
 volatile osSemaphoreId_t decodeDataSem;
 
+/*
+Packet decoding
+
+first 4 bits: left motors
+last 4 bits: right motors
+
+8 possible speeds + forward/reverse
+
+*/
+
 // Decode incoming serial data from UART2 port and determine the state
 void app_main (void *argument) {
   for (;;) {

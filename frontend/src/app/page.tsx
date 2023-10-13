@@ -1,32 +1,12 @@
-"use client";
-
-import { Button } from "@/components/Button";
-import axios from "axios";
-
-const onLED = async () => {
-  axios.post("/api/onRed");
-};
-
-const offLED = async () => {
-  axios.post("/api/offRed");
-};
+import Joystick from "@/components/Joystick";
+import LedToggle from "@/components/LedToggle";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="flex flex-col gap-12">
-        <Button
-          className="w-20 h-20 bg-white text-black rounded-full"
-          onClick={() => onLED()}
-        >
-          onLED
-        </Button>
-        <Button
-          className="w-20 h-20 bg-white text-black rounded-full"
-          onClick={() => offLED()}
-        >
-          offLED
-        </Button>
+    <main className="h-screen flex flex-col items-center p-20">
+      <LedToggle />
+      <div className="flex items-center justify-center flex-1">
+        <Joystick />
       </div>
     </main>
   );
