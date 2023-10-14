@@ -3,6 +3,7 @@
 import { Joystick as ReactJoystick } from "react-joystick-component";
 import { useState, useEffect } from "react";
 import debounce from "lodash.debounce";
+import axios from "axios";
 
 const SENDING_WINDOW_SECONDS = 0.2;
 
@@ -10,7 +11,7 @@ export default function Joystick() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lastSentPosition, setLastSentPosition] = useState({ x: 0, y: 0 });
 
-  const [isNotNextSendingWindow, setIsNotNextSendingWindow] = useState(false);
+  // const [isNotNextSendingWindow, setIsNotNextSendingWindow] = useState(false);
 
   // delayed function to allow for next sending
   // const setTransitionNextSendingWindow = debounce(() => {
@@ -28,11 +29,10 @@ export default function Joystick() {
       ) {
         return;
       }
-      console.log("sent");
-      console.log(position);
-      console.log("prev");
-      console.log(lastSentPosition);
-      setLastSentPosition(position);
+      axios.post("/api/motor", {
+        motorX: position.y,
+        motorY: position.y,
+      });
     }, SENDING_WINDOW_SECONDS * 1000);
     return () => clearInterval(interval);
   }, [position, lastSentPosition]);

@@ -18,7 +18,7 @@
     "react-dom": "^18",
     "react-joystick-component": "^6.2.1",
     "tailwind-merge": "^1.14.0",
-    "zod": "^3.22.3"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.7",
