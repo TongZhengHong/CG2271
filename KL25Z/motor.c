@@ -2,34 +2,71 @@
 #include "cmsis_os2.h"
 #include "constants.h"
 
-void move_forward(int speed);
-void move_backward(int speed);
+void move_left_forward(int speed);
+void move_left_reverse(int speed);
+void move_right_forward(int speed);
+void move_right_reverse(int speed);
 
-// Checks current state of program and set the corresponding 
-// PWM waveform to the corresponding motor pins
+int8_t convert_speed_PWM(int8_t rawSpeed) {
+	const float LOWER_PWM = 50.0;
+	const float UPPER_PWM = 100.0;
+	
+	float range = UPPER_PWM - LOWER_PWM;
+	float divider = (rawSpeed >= 0) ? 8.0 : 7.0;
+	
+	return (int8_t) LOWER_PWM + range / divider;
+}
+
 void motor_control(void *argument) {
 	for (;;) {
-		for (int i = 50; i < 80; i++) {
-			move_backward(i);
-			osDelay(300);
+		// Convert input -7 ~ 8 input speed to PWM values
+		int8_t mappedLeftSpeed = convert_speed_PWM(leftMotorSpeed);
+		int8_t mappedRightSpeed = convert_speed_PWM(rightMotorSpeed);
+		
+		// Set LEFT motor speed
+		if (leftMotorSpeed >= 0) {
+			move_left_forward(mappedLeftSpeed);
+		} else {
+			move_left_reverse(mappedLeftSpeed * -1);
 		}
-		move_backward(0);
-		osDelay(1000); 
+		
+		// Set RIGHT motor speed
+		if (rightMotorSpeed >= 0) {
+			move_right_forward(mappedRightSpeed);
+		} else {
+			move_right_reverse(mappedRightSpeed * -1);
+		}
 	}
 }
 
-void move_forward(int speed) {
+void move_left_forward(int speed) {
 	float percent = speed / 100.0;
 	TPM1_C0V = MOTOR_PERIOD_TICKS * percent;
 	TPM1_C1V = 0;
+	// TPM2_C0V = MOTOR_PERIOD_TICKS * percent;
+	// TPM2_C1V = 0;
+}
+
+void move_left_reverse(int speed) {
+	float percent = speed / 100.0;
+	TPM1_C0V = 0;
+	TPM1_C1V = MOTOR_PERIOD_TICKS * percent;
+	// TPM2_C0V = 0;
+	// TPM2_C1V = MOTOR_PERIOD_TICKS * percent;
+}
+
+void move_right_forward(int speed) {
+	float percent = speed / 100.0;
+	// TPM1_C0V = MOTOR_PERIOD_TICKS * percent;
+	// TPM1_C1V = 0;
 	TPM2_C0V = MOTOR_PERIOD_TICKS * percent;
 	TPM2_C1V = 0;
 }
 
-void move_backward(int speed) {
+void move_right_reverse(int speed) {
 	float percent = speed / 100.0;
-	TPM1_C0V = 0;
-	TPM1_C1V = MOTOR_PERIOD_TICKS * percent;
+	// TPM1_C0V = 0;
+	// TPM1_C1V = MOTOR_PERIOD_TICKS * percent;
 	TPM2_C0V = 0;
 	TPM2_C1V = MOTOR_PERIOD_TICKS * percent;
 }

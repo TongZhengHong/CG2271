@@ -1,5 +1,6 @@
 #include "cmsis_os2.h"
 
+#define END_COMMAND 0b11111111 // Full reverse + right
 enum state {
   MOVING, STOP, END
 };
