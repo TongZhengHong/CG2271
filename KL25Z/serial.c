@@ -7,6 +7,7 @@ void UART2_IRQHandler(void) {
 	
   // Ready to receive new byte data
   if (UART2->S1 & UART_S1_RDRF_MASK) {
+		// Receive incoming data
     serialData = UART2->D;
 		
 		// Trigger main loop to decode
@@ -19,6 +20,7 @@ void UART2_IRQHandler(void) {
   }
 }
 
+// Sets up UART Receiver (TX not needed)
 void init_serial(uint32_t baud_rate) {
 	uint32_t divisor;
 
@@ -26,12 +28,11 @@ void init_serial(uint32_t baud_rate) {
   SIM->SCGC4 |= SIM_SCGC4_UART2_MASK;
   SIM->SCGC5 |= SIM_SCGC5_PORTE_MASK;
 
-	// Set PTE22 & PTE23 to UART mode
-  // PORTE->PCR[SERIAL_TX] |= PORT_PCR_MUX(4);
+	// Set PTE23 to UART mode
   PORTE->PCR[SERIAL_RX] |= PORT_PCR_MUX(4);
 
-  // Disable TX and RX before config
-  UART2->C2 &= ~(UARTLP_C2_TE_MASK | UARTLP_C2_RE_MASK);
+  // Disable RX before config
+  UART2->C2 &= ~UARTLP_C2_RE_MASK;
 
   // Set baud rate to 4800 bps
   int BUS_CLOCK = DEFAULT_SYSTEM_CLOCK / 2; 
@@ -42,8 +43,8 @@ void init_serial(uint32_t baud_rate) {
   // No parity, 8 bits, 2 stop bits, other settings
   UART2->C1 = UART2->S2 = UART2->C3 = 0;
   
-  // Enable transmitter and receiver
-  UART2->C2 = UART_C2_TE_MASK | UART_C2_RE_MASK;
+  // Enable UART receiver
+  UART2->C2 = UART_C2_RE_MASK;
 
 	// Setup interrupts for UART
   NVIC_SetPriority(UART2_IRQn, 128);

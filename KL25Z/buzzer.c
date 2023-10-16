@@ -10,14 +10,13 @@ void play_freq(int freq);
 void stop_sound();
 
 void buzzer_control(void *argument) {
-	// Checks current state of program and play the corresponding music
-	for (;;) {
-		play_despacito();
-		osDelay(1000);
-		
+	// Keep playing rickroll while still running
+	while (currentState != END) {
 		play_rickroll();
-		osDelay(5000);
+		osDelay(500);
 	}
+	// Play tune to signify end
+	play_despacito();
 }
 
 void play_despacito() {

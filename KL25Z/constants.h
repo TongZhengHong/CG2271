@@ -1,5 +1,6 @@
 #include "cmsis_os2.h"
 
+#define END_COMMAND 0b11111111 // Full reverse + right
 enum state {
   MOVING, STOP, END
 };
@@ -17,22 +18,35 @@ enum state {
 // Buzzer pin
 #define BUZZER_PIN 2 // PTC2: TPM0_CH1
 
-// Serial pins
-// #define SERIAL_TX 22 // PTE22: UART2_TX
+// Serial pins (Only receiving)
 #define SERIAL_RX 23 // PTE23: UART2_RX
 
 // LED pins
-// ??? 
+#define MASK(x) (1 << (x))
+#define RED_PTE22 22 // PTE22
+
+#define GREEN_PTB8 8 // PTB8
+#define GREEN_PTB9 9 // PTB9
+#define GREEN_PTB10 10 // PTB10
+#define GREEN_PTB11 11 // PTB11
+
+#define GREEN_PTE2 2 // PTE2
+#define GREEN_PTE3 3 // PTE3
+#define GREEN_PTE4 4 // PTE4
+#define GREEN_PTE5 5 // PTE5
 
 // Global varables shared across c files
 extern volatile unsigned char serialData;
 extern volatile osSemaphoreId_t decodeDataSem;
 extern enum state currentState;
+extern int8_t leftMotorSpeed;
+extern int8_t rightMotorSpeed;
 
 // Initialisation function declarations
 void init_led();
 void init_motor();
 void init_buzzer();
+void init_led();
 void init_serial(unsigned int baud_rate);
 
 // Thread function declarations
