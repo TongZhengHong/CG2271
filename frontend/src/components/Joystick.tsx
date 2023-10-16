@@ -29,9 +29,17 @@ export default function Joystick() {
       ) {
         return;
       }
+      const x = position.x;
+      const y = position.y;
+      const motorLeft = Math.floor(
+        (y - Math.abs(x / 2) * y + (x - Math.abs(y / 2) * x)) * 8
+      );
+      const motorRight = Math.floor(
+        (y - Math.abs(x / 2) * y - (x - Math.abs(y / 2) * x)) * 8
+      );
       axios.post("/api/motor", {
-        motorX: position.y,
-        motorY: position.y,
+        motorX: motorLeft,
+        motorY: motorRight,
       });
     }, SENDING_WINDOW_SECONDS * 1000);
     return () => clearInterval(interval);

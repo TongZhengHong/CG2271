@@ -18,7 +18,7 @@ fourBitMapper.set(4, "0100");
 fourBitMapper.set(5, "0101");
 fourBitMapper.set(6, "0110");
 fourBitMapper.set(7, "0111");
-fourBitMapper.set(8, "1000");
+fourBitMapper.set(8, "0111");
 fourBitMapper.set(-1, "1001");
 fourBitMapper.set(-2, "1010");
 fourBitMapper.set(-3, "1011");
