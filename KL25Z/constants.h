@@ -39,8 +39,7 @@ enum state {
 extern volatile unsigned char serialData;
 extern volatile osSemaphoreId_t decodeDataSem;
 extern enum state currentState;
-extern int8_t leftMotorSpeed;
-extern int8_t rightMotorSpeed;
+extern int8_t leftMotorSpeed, rightMotorSpeed;
 
 // Initialisation function declarations
 void init_led();
@@ -53,6 +52,3 @@ void init_serial(unsigned int baud_rate);
 void motor_control(void *argument);
 void buzzer_control(void *argument);
 void led_control(void *argument);
-
-// Test functions
-void motor_test();
