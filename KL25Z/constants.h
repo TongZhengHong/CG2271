@@ -53,3 +53,6 @@ void init_serial(unsigned int baud_rate);
 void motor_control(void *argument);
 void buzzer_control(void *argument);
 void led_control(void *argument);
+
+// Test functions
+void motor_test();

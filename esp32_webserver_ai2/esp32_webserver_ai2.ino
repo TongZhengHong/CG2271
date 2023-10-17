@@ -39,6 +39,15 @@ int wait30 = 30000; // time to reconnect when connection is lost.
 // IPAddress primaryDNS(8, 8, 8, 8);
 // IPAddress secondaryDNS(8, 8, 4, 4);
 
+int readBinaryString(char* s) {
+  int result = 0;
+  while (*s) {
+    result <<= 1;
+    if (*s++ == '1') result |= 1;
+  }
+  return result;
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -115,23 +124,29 @@ void loop()
     return; // Motor command NOT found, abort
   }
 
+  char charBuf[8];
+
   String command = req.substring(index + motor_ident.length());
-  uint8_t command_value = strtol(command, NULL, 2);
-  Serial2.write(command_value);
+  command.toCharArray(charBuf, 8);
+  int value = readBinaryString(charBuf);
+  
+
+  Serial.println(value);
+  Serial2.write(value);
 
   // if (req.indexOf("status") != -1) {
   //   response = "WiFi Connected: " + ip_address;
   // }
-  // if (req.indexOf("onRed") != -1) {
-  //   digitalWrite(output26, HIGH);
-  //   response = "RED LED ON";
-  //   Serial2.write(0x31);
-  // }
-  // if (req.indexOf("offRed") != -1) {
-  //   digitalWrite(output26, LOW);
-  //   response = "RED LED OFF";
-  //   Serial2.write(0x30);
-  // }
+  if (req.indexOf("onRed") != -1) {
+    digitalWrite(output26, HIGH);
+    response = "RED LED ON";
+    Serial.print("Red on");
+  }
+  if (req.indexOf("offRed") != -1) {
+    digitalWrite(output26, LOW);
+    response = "RED LED OFF";
+    Serial.print("Red off");
+  }
   // if (req.indexOf("onGreen") != -1) {
   //   digitalWrite(output26, HIGH);
   //   response = "GREEN LED ON";

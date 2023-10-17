@@ -4,8 +4,13 @@ import { Button } from "@/components/Button";
 import axios from "axios";
 
 const LED = async (state: boolean) => {
-  const res = await axios.post("/api/toggleLed", { ledState: state });
-  console.log(res);
+  if (state === true) {
+    const res = await axios.post("/api/onRed", { ledState: state });
+    console.log(res);
+  } else {
+    const res = await axios.post("/api/offRed", { ledState: state });
+    console.log(res);
+  }
 };
 
 export default function LedToggle() {

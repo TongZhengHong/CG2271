@@ -44,10 +44,10 @@ void init_serial(uint32_t baud_rate) {
   UART2->C1 = UART2->S2 = UART2->C3 = 0;
   
   // Enable UART receiver
-  UART2->C2 = UART_C2_RE_MASK;
+  UART2->C2 |= UART_C2_RE_MASK;
 
 	// Setup interrupts for UART
-  NVIC_SetPriority(UART2_IRQn, 128);
+  NVIC_SetPriority(UART2_IRQn, 2);
   NVIC_ClearPendingIRQ(UART2_IRQn);
   NVIC_EnableIRQ(UART2_IRQn);
 }

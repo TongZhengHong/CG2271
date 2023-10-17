@@ -17,6 +17,16 @@ int8_t convert_speed_PWM(int8_t rawSpeed) {
 	return (int8_t) LOWER_PWM + range / divider;
 }
 
+void motor_test() {
+	for(;;) {
+		for (int i = 80; i < 100; i++) {
+			move_left_forward(i);
+			move_right_forward(i);
+			osDelay(300);
+		}
+	}
+}
+
 void motor_control(void *argument) {
 	for (;;) {
 		// Convert input -7 ~ 8 input speed to PWM values

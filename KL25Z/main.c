@@ -77,6 +77,7 @@ int main (void) {
 	init_buzzer();
 	init_led();
 	init_serial(9600);
+	// motor_test();
 	
 	const osThreadAttr_t main_thread_attr = {
 		.priority = osPriorityAboveNormal1

@@ -4,8 +4,8 @@ import { z } from "zod";
 import { isValidBody } from "@/lib/utils";
 
 const motorSpeedSchema = z.object({
-  motorX: z.number().min(-1).max(1),
-  motorY: z.number().min(-1).max(1),
+  motorX: z.number().min(-8).max(8),
+  motorY: z.number().min(-8).max(8),
 });
 
 const fourBitMapper = new Map();
@@ -39,12 +39,15 @@ export default async function offRed(
     return res.status(400).json({ message: "Invalid body" });
   }
   const { motorX, motorY } = req.body;
-  const fourBitMotorX = Math.round(motorX * 8);
-  const fourBitMotorY = Math.round(motorY * 8);
+  console.log(
+    `http://${process.env.NEXT_PUBLIC_HOTSPOT_URL}/motor=${fourBitMapper.get(
+      motorX
+    )}${fourBitMapper.get(motorY)}`
+  );
   axios.get(
     `http://${process.env.NEXT_PUBLIC_HOTSPOT_URL}/motor=${fourBitMapper.get(
-      fourBitMotorX
-    )}${fourBitMapper.get(fourBitMotorY)}}`
+      motorX
+    )}${fourBitMapper.get(motorY)}`
   );
   return res.status(200).json({ message: "Motor value sent" });
 }
