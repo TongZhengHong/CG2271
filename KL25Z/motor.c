@@ -2,54 +2,49 @@
 #include "cmsis_os2.h"
 #include "constants.h"
 
-void move_left_forward(int speed);
-void move_left_reverse(int speed);
-void move_right_forward(int speed);
-void move_right_reverse(int speed);
+void move_left_forward(int8_t speed);
+void move_left_reverse(int8_t speed);
+void move_right_forward(int8_t speed);
+void move_right_reverse(int8_t speed);
+
+int8_t mappedLeftSpeed, mappedRightSpeed;
 
 int8_t convert_speed_PWM(int8_t rawSpeed) {
+	if (rawSpeed == 0) {
+		return 0;
+	}
+	
 	const float LOWER_PWM = 50.0;
 	const float UPPER_PWM = 100.0;
 	
+	int8_t absSpeed = (rawSpeed < 0) ? rawSpeed * -1: rawSpeed;
 	float range = UPPER_PWM - LOWER_PWM;
-	float divider = (rawSpeed >= 0) ? 8.0 : 7.0;
-	
-	return (int8_t) LOWER_PWM + range / divider;
-}
-
-void motor_test() {
-	for(;;) {
-		for (int i = 80; i < 100; i++) {
-			move_left_forward(i);
-			move_right_forward(i);
-			osDelay(300);
-		}
-	}
+	return (int8_t) LOWER_PWM + range * absSpeed / 7.0;
 }
 
 void motor_control(void *argument) {
 	for (;;) {
 		// Convert input -7 ~ 8 input speed to PWM values
-		int8_t mappedLeftSpeed = convert_speed_PWM(leftMotorSpeed);
-		int8_t mappedRightSpeed = convert_speed_PWM(rightMotorSpeed);
+		mappedLeftSpeed = convert_speed_PWM(leftMotorSpeed);
+		mappedRightSpeed = convert_speed_PWM(rightMotorSpeed);
 		
 		// Set LEFT motor speed
 		if (leftMotorSpeed >= 0) {
 			move_left_forward(mappedLeftSpeed);
 		} else {
-			move_left_reverse(mappedLeftSpeed * -1);
+			move_left_reverse(mappedLeftSpeed);
 		}
 		
 		// Set RIGHT motor speed
 		if (rightMotorSpeed >= 0) {
 			move_right_forward(mappedRightSpeed);
 		} else {
-			move_right_reverse(mappedRightSpeed * -1);
+			move_right_reverse(mappedRightSpeed);
 		}
 	}
 }
 
-void move_left_forward(int speed) {
+void move_left_forward(int8_t speed) {
 	float percent = speed / 100.0;
 	TPM1_C0V = MOTOR_PERIOD_TICKS * percent;
 	TPM1_C1V = 0;
@@ -57,7 +52,7 @@ void move_left_forward(int speed) {
 	// TPM2_C1V = 0;
 }
 
-void move_left_reverse(int speed) {
+void move_left_reverse(int8_t speed) {
 	float percent = speed / 100.0;
 	TPM1_C0V = 0;
 	TPM1_C1V = MOTOR_PERIOD_TICKS * percent;
@@ -65,7 +60,7 @@ void move_left_reverse(int speed) {
 	// TPM2_C1V = MOTOR_PERIOD_TICKS * percent;
 }
 
-void move_right_forward(int speed) {
+void move_right_forward(int8_t speed) {
 	float percent = speed / 100.0;
 	// TPM1_C0V = MOTOR_PERIOD_TICKS * percent;
 	// TPM1_C1V = 0;
@@ -73,7 +68,7 @@ void move_right_forward(int speed) {
 	TPM2_C1V = 0;
 }
 
-void move_right_reverse(int speed) {
+void move_right_reverse(int8_t speed) {
 	float percent = speed / 100.0;
 	// TPM1_C0V = 0;
 	// TPM1_C1V = MOTOR_PERIOD_TICKS * percent;

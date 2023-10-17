@@ -29,13 +29,14 @@ void init_serial(uint32_t baud_rate) {
   SIM->SCGC5 |= SIM_SCGC5_PORTE_MASK;
 
 	// Set PTE23 to UART mode
+	PORTE->PCR[SERIAL_RX] &= ~PORT_PCR_MUX_MASK; // Clear PCR Mux (for choosing pin function
   PORTE->PCR[SERIAL_RX] |= PORT_PCR_MUX(4);
 
   // Disable RX before config
-  UART2->C2 &= ~UARTLP_C2_RE_MASK;
+  UART2->C2 &= ~UART_C2_RE_MASK;
 
   // Set baud rate to 4800 bps
-  int BUS_CLOCK = DEFAULT_SYSTEM_CLOCK / 2; 
+  uint32_t BUS_CLOCK = DEFAULT_SYSTEM_CLOCK / 2; 
   divisor = BUS_CLOCK / (16 * baud_rate);
   UART2->BDH = UART_BDH_SBR(divisor >> 8);
   UART2->BDL = UART_BDL_SBR(divisor);
@@ -47,7 +48,10 @@ void init_serial(uint32_t baud_rate) {
   UART2->C2 |= UART_C2_RE_MASK;
 
 	// Setup interrupts for UART
-  NVIC_SetPriority(UART2_IRQn, 2);
+  NVIC_SetPriority(UART2_IRQn, 128);
   NVIC_ClearPendingIRQ(UART2_IRQn);
   NVIC_EnableIRQ(UART2_IRQn);
+	
+	// Enable hardware interrupts for receive	
+	UART2->C2 |= UART_C2_RIE_MASK; 
 }
