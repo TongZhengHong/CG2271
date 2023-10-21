@@ -29,6 +29,8 @@ void play_despacito() {
 	int size = sizeof(despacito_melody) / sizeof(despacito_melody[0]);
 	
 	for (int thisNote = 0; thisNote < size; thisNote++) {
+		if (currentState != END) break; 
+		
 		play_freq(despacito_melody[thisNote]);
 		osDelay(wholenote / despacito_duration[thisNote]);
 		
@@ -44,6 +46,7 @@ void play_rickroll() {
 	int divider = 0, noteDuration = 0;
 	
 	for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+		if (currentState == END) break;
 		divider = rickroll_melody[thisNote + 1];
 		
     if (divider > 0) { // regular note, just proceed
