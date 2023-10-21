@@ -1,27 +1,23 @@
-// Load Wi-Fi library
 #include <stdlib.h>
 #include <WiFi.h>
 
 #define RXD2 16
 #define TXD2 17
+#define LED 2
 
 #define OFF_COMMAND 0b10001000
 
 // Replace with your network credentials
-const char *ssid = "mc";
-const char *password = "123mc123";
+const char *ssid = "Zheng Hong"; // "mc"; 
+const char *password = "zhenghong3"; // "123mc123"; 
 
+WiFiServer server(80);            // Set web server port number to 80
+String response, ip_address;      // Variable to store the HTTP request
 
-WiFiServer server(80); // Set web server port number to 80
-String response, ip_address; // Variable to store the HTTP request
-String output26State = "off"; // Auxiliar variables to store the current output state
-const int output26 = 2; // Assign output variables to GPIO pins
-
-
-unsigned long currentTime = millis(); // Current time
-unsigned long previousTime = 0; // Previous time
-const long timeoutTime = 2000; // Define timeout time in milliseconds (example: 2000ms = 2s)
-int wait30 = 30000; // time to reconnect when connection is lost.
+unsigned long currentTime = millis();
+unsigned long previousTime = 0; 
+const long timeoutTime = 2000;    // Define timeout time in milliseconds (example: 2000ms = 2s)
+int wait30 = 30000;               // time to reconnect when connection is lost.
 
 // // This is your Static IP
 // IPAddress local_IP(192, 168, 131, 50);
@@ -31,8 +27,8 @@ int wait30 = 30000; // time to reconnect when connection is lost.
 // IPAddress primaryDNS(8, 8, 8, 8);
 // IPAddress secondaryDNS(8, 8, 4, 4);
 
-int readBinaryString(char* s) {
-  int result = 0;
+uint8_t readBinaryString(char* s) {
+  uint8_t result = 0;
   while (*s) {
     result <<= 1;
     if (*s++ == '1') result |= 1;
@@ -44,8 +40,8 @@ void setup() {
   Serial.begin(115200);
   Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
   
-  pinMode(output26, OUTPUT); // Initialize the output variables as outputs
-  digitalWrite(output26, LOW); // Set outputs to LOW
+  pinMode(LED, OUTPUT); 
+  digitalWrite(LED, LOW); 
 
   // Configure Static IP
   // if(!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
@@ -81,15 +77,10 @@ void loop() {
 
   // Check if a client has connected..
   WiFiClient client = server.available();
-  if (!client) {
-    return;
-  }
+  if (!client) return;
 
   Serial.print("New client: ");
   Serial.println(client.remoteIP());
-
-  // Espera hasta que el cliente envíe datos.
-  // while(!client.available()){ delay(1); }
 
   /////////////////////////////////////////////////////
   // Read the information sent by the client.
@@ -105,66 +96,23 @@ void loop() {
 
   String motor_ident = "motor=";
   int index = req.indexOf(motor_ident);
-  if (index == -1) {
-    return; // Motor command NOT found, abort
-  }
+  // Motor command NOT found, abort
+  if (index == -1) return; 
 
+  // Get command packet from req string
   char charBuf[9];
   int start = index + motor_ident.length();
   String command = req.substring(start, start + 8);
   
+  // Convert command from string to integer value
   command.toCharArray(charBuf, 9);
-  int value = readBinaryString(charBuf);
+  uint8_t value = readBinaryString(charBuf);
   
+  // Display on serial monitor and send value via Serial2 port
   Serial.println("User command: " + command);
-  Serial.println("Sent value: " + value);
+  Serial.print("Sent value: ");
+  Serial.println(value);
   Serial2.write(value);
-
-  // if (req.indexOf("status") != -1) {
-  //   response = "WiFi Connected: " + ip_address;
-  // }
-  if (req.indexOf("onRed") != -1) {
-    digitalWrite(output26, HIGH);
-    response = "RED LED ON";
-    Serial.print("Red on");
-  }
-  if (req.indexOf("offRed") != -1) {
-    digitalWrite(output26, LOW);
-    response = "RED LED OFF";
-    Serial.print("Red off");
-  }
-
-  // if (req.indexOf("onGreen") != -1) {
-  //   digitalWrite(output26, HIGH);
-  //   response = "GREEN LED ON";
-  //   Serial2.write(0x33);
-  // }
-  // if (req.indexOf("offGreen") != -1) {
-  //   digitalWrite(output26, LOW);
-  //   response = "GREEN LED OFF";
-  //   Serial2.write(0x32);
-  // }
-  // if (req.indexOf("onBlue") != -1) {
-  //   digitalWrite(output26, HIGH);
-  //   response = "BLUE LED ON";
-  //   Serial2.write(0x35);
-  // }
-  // if (req.indexOf("offBlue") != -1) {
-  //   digitalWrite(output26, LOW);
-  //   response = "BLUE LED OFF";
-  //   Serial2.write(0x34);
-  // }
-
-  /*
-  if (req.indexOf("on12") != -1) {digitalWrite(LED12, HIGH); estado = "LED12 ON";}
-  if (req.indexOf("off12") != -1){digitalWrite(LED12, LOW); estado = "LED12 OFF";}
-  if (req.indexOf("on14") != -1) {digitalWrite(LED14, HIGH); estado = "LED14 ON";}
-  if (req.indexOf("off14") != -1){digitalWrite(LED14, LOW); estado = "LED14 OFF";}
-  if (req.indexOf("consulta") != -1) {
-      estado ="";
-      if (digitalRead(LED12) == HIGH) {estado = "LED12 ON,";} else {estado = "LED12 OFF,";}
-      if (digitalRead(LED14) == HIGH) {estado = estado + "LED14 ON";} else {estado = estado + "LED14 OFF";}
-  }*/
 
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
@@ -173,5 +121,23 @@ void loop() {
 
   client.flush();
   client.stop();
-  Serial.println("Client disconnected.");
+  Serial.println("Client disconnected.\n");
+}
+
+void simpleLEDTest(String req) {
+  // if (req.indexOf("status") != -1) {
+  //   response = "WiFi Connected: " + ip_address;
+  // }
+
+  if (req.indexOf("onRed") != -1) {
+    digitalWrite(LED, HIGH);
+    response = "RED LED ON";
+    Serial.print("Red on");
+  }
+  
+  if (req.indexOf("offRed") != -1) {
+    digitalWrite(LED, LOW);
+    response = "RED LED OFF";
+    Serial.print("Red off");
+  }
 }
