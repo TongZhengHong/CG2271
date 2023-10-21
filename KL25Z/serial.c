@@ -20,6 +20,21 @@ void UART2_IRQHandler(void) {
   }
 }
 
+// Returns the lower 3 bits of serial data (Ignore MSB)
+uint8_t getMagnitude(uint8_t rawSpeed) {
+	return rawSpeed & 0b111;
+}
+
+// Checks 4th bit of serial data to check POSITIVE
+char isSerialPositive(uint8_t rawSpeed) {
+	return !(rawSpeed & 0b1000); // MSB = 0
+}
+
+// Checks 4th bit of serial data to check NEGATIVE
+char isSerialNegative(uint8_t rawSpeed) {
+	return rawSpeed & 0b1000; // MSB = 1
+}
+
 // Sets up UART Receiver (TX not needed)
 void init_serial(uint32_t baud_rate) {
 	uint32_t divisor;

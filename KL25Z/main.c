@@ -7,9 +7,7 @@ volatile uint8_t serialData;
 volatile osSemaphoreId_t decodeDataSem;
 
 enum state currentState = STOP;
-
-uint8_t rawLeft, rawRight;
-int8_t leftMotorSpeed, rightMotorSpeed;
+uint8_t leftMotorSpeed, rightMotorSpeed;
 
 /*
 Packet decoding
@@ -17,33 +15,16 @@ Packet decoding
 First 4 bits: left motors
 Last 4 bits: right motors
 
-8 possible speeds + forward/reverse
+7 possible speeds + forward/reverse
 
 0000 = 0
 
 0001 ~ 0111 = +1 ~ +7
-1000 = +8 -> For more forward values
+1000: Ignored for ease of processing
 
 1001 ~ 1111 = -1 ~ -7
 
 */
-
-// Convert incoming serial 4-bit signed-magnitude to 2's complement int8_t
-// This is for direction identification later in motor section
-int8_t decode_speed(uint8_t rawSpeed) {
-	char isForward = !(rawSpeed & 0b1000); // MSB = 0
-	char isReverse = rawSpeed & 0b1000; // MSB = 1
-	
-	if (isForward) {
-		return (int8_t) rawSpeed;
-		
-	} else if (isReverse) { 
-		uint8_t magnitude = rawSpeed &= 0b0111; // Clear MSB for magnitude
-		return ((int8_t) magnitude) * -1;
-	}
-	
-	return 0; // Stop (speed = 0) by default
-}
 
 // Decode incoming serial data from UART2 port and determine the state
 void app_main (void *argument) {
@@ -51,18 +32,15 @@ void app_main (void *argument) {
   for (;;) {
 		osSemaphoreAcquire(decodeDataSem, osWaitForever);
 		
-		rawLeft = serialData >> 4; // Extract uppper 4 bits
-		rawRight = serialData & 0b00001111; // Clear upper 4 bits
-		
-		leftMotorSpeed = decode_speed(rawLeft);
-		rightMotorSpeed = decode_speed(rawRight);
+		leftMotorSpeed = serialData >> 4; // Extract uppper 4 bits
+		rightMotorSpeed = serialData & 0b00001111; // Clear upper 4 bits
 		
 		if (serialData == END_COMMAND) {
 			currentState = END;
 			leftMotorSpeed = 0;
 			rightMotorSpeed = 0;
 			
-		} else if (rawLeft == 0 && rawRight == 0) {
+		} else if (leftMotorSpeed == 0 && rightMotorSpeed == 0) {
 			currentState = STOP;
 		} else {
 			currentState = MOVING;

@@ -1,6 +1,6 @@
 #include "cmsis_os2.h"
 
-#define END_COMMAND 0b11111111 // Full reverse + right
+#define END_COMMAND 0b10001000 // Full reverse + right
 enum state {
   MOVING, STOP, END
 };
@@ -39,7 +39,7 @@ enum state {
 extern volatile unsigned char serialData;
 extern volatile osSemaphoreId_t decodeDataSem;
 extern enum state currentState;
-extern int8_t leftMotorSpeed, rightMotorSpeed;
+extern uint8_t leftMotorSpeed, rightMotorSpeed;
 
 // Initialisation function declarations
 void init_led();
@@ -52,3 +52,8 @@ void init_serial(unsigned int baud_rate);
 void motor_control(void *argument);
 void buzzer_control(void *argument);
 void led_control(void *argument);
+
+// Serial data processing functions
+uint8_t getMagnitude(uint8_t rawSpeed);
+char isSerialPositive(uint8_t rawSpeed);
+char isSerialNegative(uint8_t rawSpeed);
