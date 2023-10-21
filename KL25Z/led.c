@@ -2,27 +2,29 @@
 #include "constants.h"
 
 void set_green_seq(uint8_t x);
-uint8_t green_control = 1;
+uint8_t green_counter = 0;
 
 void led_control(void *argument) {
 	for (;;) {
 		if (currentState == MOVING) {
 			// Green continuous, Red all toggle 500ms
-			set_green_seq(green_control << 1);
-			if (green_control == 0b10000000) 
-				green_control = 1; // Reset green led position
+			set_green_seq(MASK(green_counter));
+			green_counter++;
+			if (green_counter == 8) {
+				green_counter = 0; // Reset green led position
+			}
 			
 			// Toggle RED led every 500ms
-			PTB->PTOR |= MASK(RED_PTE22);
+			PTE->PTOR = MASK(RED_PTE22);
 			osDelay(500);
 			
 		} else { // STOP or END states
 			// Turn on ALL green leds
-			PTB->PCOR |= (MASK(GREEN_PTB8) | MASK(GREEN_PTB9) | MASK(GREEN_PTB10) | MASK(GREEN_PTB11));
-			PTE->PCOR |= (MASK(GREEN_PTE2) | MASK(GREEN_PTE3) | MASK(GREEN_PTE4) | MASK(GREEN_PTE5));
+			PTB->PDOR |= (MASK(GREEN_PTB8) | MASK(GREEN_PTB9) | MASK(GREEN_PTB10) | MASK(GREEN_PTB11));
+			PTE->PDOR |= (MASK(GREEN_PTE2) | MASK(GREEN_PTE3) | MASK(GREEN_PTE4) | MASK(GREEN_PTE5));
 			
 			// Toggle RED led every 250ms
-			PTB->PTOR |= MASK(RED_PTE22);
+			PTE->PTOR = MASK(RED_PTE22);
 			osDelay(250);
 		}
 	}
@@ -32,8 +34,16 @@ void set_green_seq(uint8_t sequence) {
 	uint8_t portE = sequence >> 4;
 	uint8_t portB = sequence &= 0b00001111; // Clear upper 4 bits
 	
-	PTB->PDOR |= portB << 8;
-	PTE->PDOR |= portE << 2;
+	char PORTB_LED_SHIFT = 8;
+	char PORTE_LED_SHIFT = 2;
+	
+	// Turn OFF green leds
+	PTB->PCOR |= (0b1111 << PORTB_LED_SHIFT);
+	PTE->PCOR |= (0b1111 << PORTE_LED_SHIFT);
+	
+	// Turn ON green leds
+	PTB->PSOR |= portB << PORTB_LED_SHIFT;
+	PTE->PSOR |= portE << PORTE_LED_SHIFT;
 }
 
 void init_led() {
