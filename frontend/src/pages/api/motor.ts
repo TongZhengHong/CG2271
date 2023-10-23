@@ -28,10 +28,7 @@ fourBitMapper.set(-6, "1110");
 fourBitMapper.set(-7, "1111");
 fourBitMapper.set(-8, "1111");
 
-export default async function offRed(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function motor(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -39,6 +36,7 @@ export default async function offRed(
     return res.status(400).json({ message: "Invalid body" });
   }
   const { motorX, motorY } = req.body;
+  console.log(req.body);
   console.log(
     `http://${process.env.NEXT_PUBLIC_HOTSPOT_URL}/motor=${fourBitMapper.get(
       motorX

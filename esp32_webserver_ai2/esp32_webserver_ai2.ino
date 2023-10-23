@@ -8,8 +8,8 @@
 #define OFF_COMMAND 0b10001000
 
 // Replace with your network credentials
-const char *ssid = "Zheng Hong"; // "mc"; 
-const char *password = "zhenghong3"; // "123mc123"; 
+const char *ssid = "mc"; // "mc"; 
+const char *password = "123mc123"; // "123mc123"; 
 
 WiFiServer server(80);            // Set web server port number to 80
 String response, ip_address;      // Variable to store the HTTP request
@@ -113,6 +113,8 @@ void loop() {
   Serial.print("Sent value: ");
   Serial.println(value);
   Serial2.write(value);
+
+  response = "Motor success";
 
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
