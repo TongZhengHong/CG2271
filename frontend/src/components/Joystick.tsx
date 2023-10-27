@@ -4,7 +4,7 @@ import { Joystick as ReactJoystick } from "react-joystick-component";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const SENDING_WINDOW_SECONDS = 1;
+const SENDING_WINDOW_SECONDS = 0.5;
 
 const fourBitMapper = new Map();
 
@@ -54,16 +54,10 @@ export default function Joystick() {
       const motorRight = Math.floor(
         (y - Math.abs(x / 2) * y - (x - Math.abs(y / 2) * x)) * 8
       );
-      console.log("motor move");
-      axios.get(
-        `http://${
-          process.env.NEXT_PUBLIC_HOTSPOT_URL
-        }/motor=${fourBitMapper.get(motorLeft)}${fourBitMapper.get(motorRight)}`
-      );
-      // axios.post("/api/motor", {
-      //   motorX: motorLeft,
-      //   motorY: motorRight,
-      // });
+      axios.post("/api/motor", {
+        motorX: motorLeft,
+        motorY: motorRight,
+      });
     }, SENDING_WINDOW_SECONDS * 1000);
     return () => clearInterval(interval);
   }, [position, lastSentPosition]);
